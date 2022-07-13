@@ -7,7 +7,13 @@
  *
  */
 
+const path = require("path");
+
 const IOhandler = require("./IOhandler"),
-  zipFilePath = `${__dirname}/myfile.zip`,
-  pathUnzipped = `${__dirname}/unzipped`,
-  pathProcessed = `${__dirname}/grayscaled`;
+  zipFilePath = path.join(__dirname, 'myfile.zip'),
+  pathUnzipped =  path.join(__dirname, 'unzipped'),
+  pathProcessed =  path.join(__dirname, 'grayscaled');
+
+IOhandler.unzip(zipFilePath, pathUnzipped)
+  .then(console.log("test"))  
+  .catch(err => console.log(err))
