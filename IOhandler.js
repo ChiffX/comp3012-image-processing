@@ -9,7 +9,7 @@
 
 const unzipper = require("unzipper"),
   fs = require("fs").promises,
-  { createReadStream, createWriteStream } = require("fs");
+  { createReadStream, createWriteStream, existsSync } = require("fs"),
   PNG = require("pngjs").PNG,
   path = require("path");
 
@@ -46,11 +46,46 @@ const readDir = (dir) => {
  * @param {string} pathProcessed
  * @return {promise}
  */
-const grayScale = (pathIn, pathOut) => { 
-  const ext = path.extname(pathIn);
+const grayScale = (pathIn, pathOut) => {
+  const fileName = path.parse(pathIn).base;
+  const extension = path.extname(fileName);
 
-  if(ext === ".png"){
-    console.log(pathIn);
+  if (extension === ".png") {
+    createReadStream(pathIn)
+      .pipe(
+        new PNG({
+          filterType: 4,
+        })
+      )
+      .on("parsed", function () {
+        for (var y = 0; y < this.height; y++) {
+          for (var x = 0; x < this.width; x++) {
+            var idx = (this.width * y + x) << 2;
+
+            // adapted from https://github.com/noopkat/floyd-steinberg/blob/master/floyd-steinberg.js
+            // sick toddler, no time to reinvent the wheel
+
+            let w = this.width
+
+            let newPixel = this.data[idx] < 150 ? 0 : 255;
+            let err = Math.floor((this.data[idx] - newPixel) / 23);
+            this.data[idx + 0 * 1 - 0] = newPixel;
+            this.data[idx + 4 * 1 - 0] += err * 7;
+            this.data[idx + 4 * w - 4] += err * 3;
+            this.data[idx + 4 * w - 0] += err * 5;
+            this.data[idx + 4 * w + 4] += err * 1;
+
+            this.data[idx + 1] = this.data[idx + 2] = this.data[idx];
+          }
+        }
+
+        if (!(existsSync(pathOut))) {
+          fs.mkdir(pathOut);
+        }
+
+        const pathProcessed = path.join(pathOut, fileName);
+        this.pack().pipe(createWriteStream(pathProcessed));
+      });
   }
 };
 

@@ -1,9 +1,9 @@
 /*
  * File Name: main.js
- * Description:
+ * Description: Image processing app to convert images to greyscale
  *
- * Created Date:
- * Author:
+ * Created Date: 13-Jul-2022
+ * Author: Ryan Carswell
  *
  */
 
@@ -11,8 +11,8 @@ const path = require("path");
 
 const IOhandler = require("./IOhandler"),
   zipFilePath = path.join(__dirname, 'myfile.zip'),
-  pathUnzipped =  path.join(__dirname, 'unzipped'),
-  pathProcessed =  path.join(__dirname, 'grayscaled');
+  pathUnzipped = path.join(__dirname, 'unzipped'),
+  pathProcessed = path.join(__dirname, 'grayscaled');
 
 IOhandler.unzip(zipFilePath, pathUnzipped)
   .then(() => IOhandler.readDir(pathUnzipped))
