@@ -22,9 +22,9 @@ const unzipper = require("unzipper"),
  */
 const unzip = (pathIn, pathOut) => {
   return createReadStream(pathIn)
-    .pipe(unzipper.Extract({ path: pathOut} ))
+    .pipe(unzipper.Extract({ path: pathOut }))
     .promise()
-    .then( () => console.log('Extraction complete'), e => console.log('Extraction failed', e));
+    .then(() => console.log('Extraction complete'), e => console.log('Extraction failed', e));
 };
 
 /**
@@ -33,7 +33,10 @@ const unzip = (pathIn, pathOut) => {
  * @param {string} path
  * @return {promise}
  */
-const readDir = (dir) => {};
+const readDir = (dir) => {
+  const files = fs.readdir(dir);
+  return files;
+};
 
 /**
  * Description: Read in png file by given pathIn,
@@ -43,7 +46,13 @@ const readDir = (dir) => {};
  * @param {string} pathProcessed
  * @return {promise}
  */
-const grayScale = (pathIn, pathOut) => {};
+const grayScale = (pathIn, pathOut) => { 
+  const ext = path.extname(pathIn);
+
+  if(ext === ".png"){
+    console.log(pathIn);
+  }
+};
 
 module.exports = {
   unzip,
